@@ -1,4 +1,4 @@
-import random 
+import random, sys
 
 def generate_graph(num_vertices):
     print(num_vertices)
@@ -9,4 +9,4 @@ def generate_graph(num_vertices):
     	if vertex1 != vertex2:
     		print(vertex1, vertex2, round(random.uniform(0, 100), 3))
 
-generate_graph(10)
+generate_graph(int(sys.argv[1]))
