@@ -1,10 +1,8 @@
 # CS 170 Project Spring 2020
 
-Take a look at the project spec before you get started!
+Add the skeleton repo as a remote with `git remote add skeleton https://github.com/Berkeley-CS170/project-sp20-skeleton.git` so you can pull updates.
 
-Requirements:
-
-You'll only need to install networkx to work with the starter code. For installation instructions, follow: https://networkx.github.io/documentation/stable/install.html
+You'll only need to install networkx to work with the starter code. For installation instructions, follow: https://networkx.github.io/documentation/stable/install.html. `pip install networkx`
 
 Files:
 - `parse.py`: functions to read/write inputs and outputs
@@ -14,4 +12,5 @@ Files:
 When writing inputs/outputs:
 - Make sure you use the functions `write_input_file` and `write_output_file` provided
 - Run the functions `read_input_file` and `read_output_file` to validate your files before submitting!
-  - These are the functions run by the autograder to validate submissions
+- These are the functions run by the autograder to validate submissions
+
