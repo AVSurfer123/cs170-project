@@ -3,7 +3,7 @@ from parse import read_input_file, write_output_file
 from utils import is_valid_network, average_pairwise_distance
 import glob, random, sys, os
 
-def solve_helper(G, T, considered_vertices):
+'''def solve_helper(G, T, considered_vertices):
     # Partition graph into 2 halves
     # Find the min cut across those 2 halves
     # Call solve helper recursively on the two haves
@@ -31,7 +31,7 @@ def solve_helper(G, T, considered_vertices):
     if min_edge != None:
         T.add_node(min_edge[0])
         T.add_node(min_edge[1])
-        T.add_edge(min_edge[0], min_edge[1], attr_dict = {'weight':min_weight})
+        T.add_edge(min_edge[0], min_edge[1], attr_dict = {'weight':min_weight})'''
 
 
 def solve(G):
@@ -44,11 +44,32 @@ def solve(G):
     """
 
     # TODO: your code here!
-    T = nx.Graph()
+    '''T = nx.Graph()
     solve_helper(G, T, list(G.nodes))
     T = nx.minimum_spanning_tree(G)
-    return T
+    return T'''
+    #Find the minimum shortest paths tree
+    min_cost, min_length, min_path = float('inf'), [], []
+    for vertex in G.nodes():
+        length, path = nx.single_source_dijkstra(G, vertex)
+        cost = 0
+        for vertex_inner in G.nodes():
+            cost += length[vertex_inner]
+        if cost < min_cost:
+            min_cost, min_length, min_path = cost, length, path.values()
 
+    T = nx.Graph()
+    for vertex in G.nodes():
+        T.add_node(vertex)
+    for path in min_path:
+        for i in range(len(path) - 1):
+            T.add_edge(path[i], path[i + 1], attr_dict={'weight':G[path[i]][path[i + 1]]['weight']})
+
+    #Prune the unecessary edges/vertices
+    #for vertex in T.nodes():
+
+
+    return T
 
 # Here's an example of how to run your solver.
 
