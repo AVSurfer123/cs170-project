@@ -49,21 +49,19 @@ def solve(G):
     T = nx.minimum_spanning_tree(G)
     return T'''
     #Find the minimum shortest paths tree
-    min_cost, min_length, min_path = float('inf'), [], []
+    min_cost, T = float('inf'), None
     for vertex in G.nodes():
-        length, path = nx.single_source_dijkstra(G, vertex)
-        cost = 0
-        for vertex_inner in G.nodes():
-            cost += length[vertex_inner]
-        if cost < min_cost:
-            min_cost, min_length, min_path = cost, length, path.values()
+        length, all_paths = nx.single_source_dijkstra(G, vertex)
+        T_curr = nx.Graph()
+        for vertex in G.nodes():
+            T_curr.add_node(vertex)
+        for path in all_paths.values():
+            for i in range(len(path) - 1):
+                T_curr.add_edge(path[i], path[i + 1], weight=G[path[i]][path[i + 1]]["weight"])
 
-    T = nx.Graph()
-    for vertex in G.nodes():
-        T.add_node(vertex)
-    for path in min_path:
-        for i in range(len(path) - 1):
-            T.add_edge(path[i], path[i + 1], weight=G[path[i]][path[i + 1]]["weight"])
+        cost = average_pairwise_distance_fast(T_curr)
+        if cost < min_cost:
+            min_cost, T = cost, T_curr
 
     #Prune the unecessary edges/vertices
     min_pairwise_distance = average_pairwise_distance_fast(T)
