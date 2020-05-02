@@ -1,7 +1,37 @@
 import networkx as nx
 from parse import read_input_file, write_output_file
 from utils import is_valid_network, average_pairwise_distance
-import glob, sys, os
+import glob, random, sys, os
+
+def solve_helper(G, T, considered_vertices):
+    # Partition graph into 2 halves
+    # Find the min cut across those 2 halves
+    # Call solve helper recursively on the two haves
+    # Add the min vertex back in
+    if len(considered_vertices) < 2:
+        return
+    if len(considered_vertices) == 2:
+        if G.has_edge(considered_vertices[0], considered_vertices[1]):
+            T.add_node(considered_vertices[0])
+            T.add_node(considered_vertices[1])
+            T.add_edge(considered_vertices[0], considered_vertices[1], attr_dict = {'weight':G[considered_vertices[0]][considered_vertices[1]]['weight']})
+
+    random.shuffle(considered_vertices)
+    left, right = considered_vertices[:len(considered_vertices)//2], considered_vertices[len(considered_vertices)//2:]
+    left_set, right_set = set(left), set(right)
+    solve_helper(G, T, left)
+    solve_helper(G, T, right)
+
+    min_edge, min_weight = None, float('inf')
+    for vertex in left_set:
+        for adj_vertex in G.adj[vertex]:
+            if adj_vertex in right_set and G[vertex][adj_vertex]['weight'] < min_weight:
+                min_edge, min_weight = (vertex, adj_vertex), G[vertex][adj_vertex]['weight']
+
+    if min_edge != None:
+        T.add_node(min_edge[0])
+        T.add_node(min_edge[1])
+        T.add_edge(min_edge[0], min_edge[1], attr_dict = {'weight':min_weight})
 
 
 def solve(G):
@@ -14,16 +44,11 @@ def solve(G):
     """
 
     # TODO: your code here!
+    T = nx.Graph()
+    solve_helper(G, T, list(G.nodes))
     T = nx.minimum_spanning_tree(G)
-    T_copy = T.copy()
-    for node in T_copy.nodes():
-        if len(list(T_copy.neighbors(node))) == 1:
-        	try:
-	            T.remove_edge(node, list(T_copy.neighbors(node))[0])
-	            T.remove_node(node)
-	        except:
-	        	pass
     return T
+
 
 # Here's an example of how to run your solver.
 
