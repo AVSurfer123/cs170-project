@@ -3,33 +3,6 @@ from parse import read_input_file, write_output_file, write_input_file
 from utils import is_valid_network, average_pairwise_distance, average_pairwise_distance_fast
 import functools, glob, random, sys, os
 
-def min_spt(G):
-    min_cost, T = float('inf'), None
-    for vertex in G.nodes():
-        length, all_paths = nx.single_source_dijkstra(G, vertex)
-        T_curr = nx.Graph()
-        for vertex in G.nodes():
-            T_curr.add_node(vertex)
-        for path in all_paths.values():
-            for i in range(len(path) - 1):
-                T_curr.add_edge(path[i], path[i + 1], weight=G[path[i]][path[i + 1]]["weight"])
-
-        cost = average_pairwise_distance_fast(T_curr)
-        if cost < min_cost:
-            min_cost, T = cost, T_curr
-    return T
-
-'''def prune_vertices_push(G, T):
-    for vertex in G.nodes():
-        if not T.has_node(vertex):
-            continue
-        neighbors = G.neighbors(vertex)
-        for neighbor in neighbors:
-            if not T.has_node(neighbor):
-                continue'''
-
-
-
 
 def prune_vertices_rec(G, T, min_pairwise_distance, depth=5):
     if depth == 0:
@@ -66,6 +39,38 @@ def prune_vertices_deep(G, T):
                         change = True
                         T, min_pairwise_distance = T_copy, pairwise_distance
 
+def min_spt(G, pruner_depth):
+    min_cost, T = float('inf'), None
+    for vertex in G.nodes():
+        length, all_paths = nx.single_source_dijkstra(G, vertex)
+        T_curr = nx.Graph()
+        for vertex in G.nodes():
+            T_curr.add_node(vertex)
+        for path in all_paths.values():
+            for i in range(len(path) - 1):
+                T_curr.add_edge(path[i], path[i + 1], weight=G[path[i]][path[i + 1]]["weight"])
+
+        T
+        T_curr, _ = prune_vertices_rec(G, T_curr, average_pairwise_distance_fast(T_curr), pruner_depth)
+        prune_vertices_deep(G, T_curr)
+        cost = average_pairwise_distance_fast(T_curr)
+
+        if cost < min_cost:
+            min_cost, T = cost, T_curr
+    return T
+
+'''def prune_vertices_push(G, T):
+    for vertex in G.nodes():
+        if not T.has_node(vertex):
+            continue
+        neighbors = G.neighbors(vertex)
+        for neighbor in neighbors:
+            if not T.has_node(neighbor):
+                continue
+            T_copy = T.copy()'''
+
+
+
 def solve(G, pruner_depth=4):
     """
     Args:
@@ -82,13 +87,13 @@ def solve(G, pruner_depth=4):
             return T
 
     #Find the minimum shortest paths tree
-    T = min_spt(G)
+    T = min_spt(G, pruner_depth)
 
     #Prune the unecessary edges/vertices
-    min_pairwise_distance = average_pairwise_distance_fast(T)
+    #min_pairwise_distance = average_pairwise_distance_fast(T)
     #prune_vertices_push(G, T)
-    T, _ = prune_vertices_rec(G, T, min_pairwise_distance, pruner_depth)
-    prune_vertices_deep(G, T)
+    #T, _ = prune_vertices_rec(G, T, min_pairwise_distance, pruner_depth)
+    #prune_vertices_deep(G, T)
     return T
 
 # Here's an example of how to run your solver.
@@ -108,11 +113,11 @@ if __name__ == '__main__':
     for path in paths:
         G = read_input_file(path)
         if 'small' in path:
-            T = solve(G, pruner_depth = 20)
+            T = solve(G, pruner_depth = 5)
         if 'large' in path:
             T = solve(G, pruner_depth = 2)
         else:
-            T = solve(G)
+            T = solve(G, pruner_depth = 4)
         assert is_valid_network(G, T)
         graph_name = os.path.basename(path).split(".")[0]
         print(count, f"Average  pairwise distance for {graph_name}: {average_pairwise_distance(T)}")
