@@ -1,6 +1,6 @@
 import networkx as nx
 from parse import read_input_file, write_output_file
-from utils import is_valid_network, average_pairwise_distance
+from utils import is_valid_network, average_pairwise_distance, average_pairwise_distance_fast
 import glob, random, sys, os
 
 '''def solve_helper(G, T, considered_vertices):
@@ -63,12 +63,21 @@ def solve(G):
         T.add_node(vertex)
     for path in min_path:
         for i in range(len(path) - 1):
-            T.add_edge(path[i], path[i + 1], attr_dict={'weight':G[path[i]][path[i + 1]]['weight']})
+            T.add_edge(path[i], path[i + 1], weight=G[path[i]][path[i + 1]]["weight"])
 
     #Prune the unecessary edges/vertices
-    #for vertex in T.nodes():
-
-
+    min_pairwise_distance = average_pairwise_distance_fast(T)
+    for _ in range(10):
+        for vertex in G.nodes():
+            if not T.has_node(vertex):
+                continue
+            if len(T[vertex]) == 1:
+                T_copy = T.copy()
+                T_copy.remove_node(vertex)
+                if is_valid_network(G, T_copy):
+                    pairwise_distance = average_pairwise_distance_fast(T_copy)
+                    if pairwise_distance < min_pairwise_distance:
+                        T, min_pairwise_distance = T_copy, pairwise_distance
     return T
 
 # Here's an example of how to run your solver.
