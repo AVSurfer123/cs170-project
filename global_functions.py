@@ -1,6 +1,6 @@
 import networkx as nx
 from parse import read_input_file, write_output_file
-from utils import is_valid_network, average_pairwise_distance, average_pairwise_distance_fast
+from utils import is_valid_network, average_pairwise_distance_fast
 import glob, sys
 import numpy as np
 import os.path
@@ -39,7 +39,7 @@ def single_source_dij(G):
             best_node = i
     
     #add all shortest paths from node that yields lowest average shortest path to all other nodes
-    paths = list(span[i][1].values())
+    paths = list(span[best_node][1].values())
     
     for p in paths:
         counter = 0
@@ -60,7 +60,7 @@ def single_source_dij(G):
             short.remove_node(nodes_span[i])
 
     edges_span = [edge for edge in short.edges()]
-    avg_pair = average_pairwise_distance(short)
+    avg_pair = average_pairwise_distance_fast(short)
 
     for e in G.edges():
         if not short.has_edge(e[0], e[1]):
@@ -68,7 +68,7 @@ def single_source_dij(G):
             copied = short.copy()
             copied.add_edge(e[0], e[1])
             if is_valid_network(G, copied):
-                new_dist = average_pairwise_distance(copied)
+                new_dist = average_pairwise_distance_fast(copied)
             if not new_dist == None and new_dist <= avg_pair and is_valid_network(G, copied):
                 avg_pair = new_dist
                 short.add_edge(e[0], e[1])
@@ -76,3 +76,9 @@ def single_source_dij(G):
         
         
     return short
+
+
+if __name__ == '__main__':
+    import parse
+    G = parse.read_input_file('test_inputs/medium-1.in')
+    T = single_source_dij(G)
