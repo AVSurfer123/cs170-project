@@ -37,7 +37,8 @@ def prune_vertices_deep(G, T):
                     pairwise_distance = average_pairwise_distance_fast(T_copy)
                     if pairwise_distance < min_pairwise_distance:
                         change = True
-                        T, min_pairwise_distance = T_copy, pairwise_distance
+                        T.remove_node(vertex)
+                        min_pairwise_distance = pairwise_distance
 
 def min_spt(G, pruner_depth):
     min_cost, T = float('inf'), None
