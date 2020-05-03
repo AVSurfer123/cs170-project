@@ -122,4 +122,4 @@ if __name__ == '__main__':
         graph_name = os.path.basename(path).split(".")[0]
         print(count, f"Average  pairwise distance for {graph_name}: {average_pairwise_distance(T)}")
         count += 1
-        write_input_file(T, os.path.join(output_dir, f"{graph_name}.out"))
+        write_output_file(T, os.path.join(output_dir, f"{graph_name}.out"))
