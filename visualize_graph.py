@@ -1,6 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from parse import read_input_file
+from parse import read_input_file, read_output_file
 import sys
 
 def visualize_graph(G, round_labels=True):
@@ -15,5 +15,17 @@ def visualize_graph(G, round_labels=True):
 
 if __name__ == '__main__':
     path = sys.argv[1]
-    G = read_input_file(path)
+    if len(sys.argv) == 3:
+        mode = sys.argv[2]
+    else:
+        mode = 'input'
+    if mode not in ['input', 'output']:
+        print("Second argument must be whether it is an 'output' file.")
+    if mode == 'output':
+        name = path.split('/')[-1].split('.')[0]
+        input_path = f'inputs/{name}.in'
+        G = read_input_file(input_path)
+        G = read_output_file(path, G)
+    else:
+        G = read_input_file(path)
     visualize_graph(G)
