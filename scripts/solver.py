@@ -51,7 +51,6 @@ def min_spt(G, pruner_depth):
             for i in range(len(path) - 1):
                 T_curr.add_edge(path[i], path[i + 1], weight=G[path[i]][path[i + 1]]["weight"])
 
-        T
         T_curr, _ = prune_vertices_rec(G, T_curr, average_pairwise_distance_fast(T_curr), pruner_depth)
         prune_vertices_deep(G, T_curr)
         cost = average_pairwise_distance_fast(T_curr)
@@ -59,18 +58,6 @@ def min_spt(G, pruner_depth):
         if cost < min_cost:
             min_cost, T = cost, T_curr
     return T
-
-'''def prune_vertices_push(G, T):
-    for vertex in G.nodes():
-        if not T.has_node(vertex):
-            continue
-        neighbors = G.neighbors(vertex)
-        for neighbor in neighbors:
-            if not T.has_node(neighbor):
-                continue
-            T_copy = T.copy()'''
-
-
 
 def solve(G, pruner_depth=4):
     """
@@ -89,17 +76,11 @@ def solve(G, pruner_depth=4):
 
     #Find the minimum shortest paths tree
     T = min_spt(G, pruner_depth)
-
-    #Prune the unecessary edges/vertices
-    #min_pairwise_distance = average_pairwise_distance_fast(T)
-    #prune_vertices_push(G, T)
-    #T, _ = prune_vertices_rec(G, T, min_pairwise_distance, pruner_depth)
-    #prune_vertices_deep(G, T)
     return T
 
 # Here's an example of how to run your solver.
 
-# Usage: python3 solver.py test.in
+# Usage: python3 solver.py inputs/ outputs/
 
 if __name__ == '__main__':
     assert len(sys.argv) == 3
@@ -112,14 +93,6 @@ if __name__ == '__main__':
     print(paths)
     count = 1
     for path in paths:
-        '''safe = False
-        for element in to_redo:
-            if element in path:
-                print(element, path)
-                safe = True
-        if not safe:
-            continue'''
-
         G = read_input_file(path)
         T = solve(G, pruner_depth = 0)
         min_pairwise_distance = average_pairwise_distance_fast(T)

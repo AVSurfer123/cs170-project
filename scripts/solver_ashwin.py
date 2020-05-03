@@ -38,8 +38,6 @@ def prune_vertices_iter(G, T, depth):
                         T, min_pairwise_distance = T_copy, pairwise_distance
     return T
 
-
-
 def min_spt(G, pruner_depth):
     T = nx.minimum_spanning_tree(G)
     # T_curr, _ = prune_vertices_rec(G, T, average_pairwise_distance_fast(T), pruner_depth)
@@ -60,7 +58,6 @@ def min_spt(G, pruner_depth):
         start = time.time()
         T_curr = prune_vertices_iter(G, T_curr, T_curr.number_of_nodes()//2)
         # print(f'prune iter took {time.time() - start}')
-
 
         cost = average_pairwise_distance_fast(T_curr)
         if cost < min_cost:
@@ -102,7 +99,7 @@ def solve(G, pruner_depth=4):
 
 # Here's an example of how to run your solver.
 
-# Usage: python3 solver.py test.in
+# Usage: python3 solver.py inputs/ outputs/
 
 if __name__ == '__main__':
     assert len(sys.argv) == 3
@@ -114,17 +111,8 @@ if __name__ == '__main__':
         paths = [inputs]
     print(paths)
     count = 1
-    to_redo = ['']
     for path in paths:
         G = read_input_file(path)
-        safe = False
-        for element in to_redo:
-            if element in path:
-                print(element, path)
-                safe = True
-        if not safe:
-            continue
-
         if 'small' in path:
             T = solve(G, pruner_depth=20)
         elif 'large' in path:
